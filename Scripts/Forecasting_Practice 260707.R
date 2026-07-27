@@ -9,6 +9,7 @@ rm(list = ls())             ## Clear environment
 # INSTALL AND LOAD PACKAGES --------------------------------
 pacman::p_load(magrittr, pacman, tidyverse,ggforce)
 library(fpp3) # load the forecasting package
+library(fable)
 
 # LOAD AND PREPARE DATA ------------------------------------
 # pathway_summary <- # import the previously prepared pathway_summary csv file
@@ -31,3 +32,19 @@ autoplot(melsyd_economy, Passengers) +
         subtitle = "Melbourne-Sydney",
         y = "Passengers ('000)")
 )
+
+aus_economy <- global_economy |>
+  filter(Code == "AUS") |>
+  mutate(Pop = Population / 1e6)
+autoplot(aus_economy, Pop) +
+  labs(y = "Millions", title = "Australian population")
+
+fit <- 
+  aus_economy %>% 
+  model(
+    AAN = ETS(Pop ~ error("A") + trend("A") + season("N"))
+  )
+
+fc <-
+  fit %>% 
+  forecast(h=10)
