@@ -78,16 +78,20 @@ enrollment_time_series <-
 new_students <- 
   enrollment_time_series
 
+training_data <- 
+  new_students %>% 
+  slice(1:9)
+
 autoplot(new_students, enrollment) +
   labs(y = "New Students", title = "semester code")
 
 enroll_fit <- 
-  new_students %>% 
+  training_data %>% 
   model(
-    AAN = ETS(enrollment ~ error("A") + trend("A") + season("N"))
+    AAN = ETS(enrollment ~ error("A") + trend("Ad") + season("N"))
   )
 
 enroll_fc <-
   enroll_fit %>% 
-  forecast(h=10)
+  forecast(h=2)
 
